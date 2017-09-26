@@ -1,5 +1,9 @@
 .DS_Store
 
+# Kelly
+tmp/*
+code/scripts/*
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

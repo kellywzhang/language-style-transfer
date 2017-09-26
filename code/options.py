@@ -23,6 +23,9 @@ def load_arguments():
     argparser.add_argument('--vocab',
             type=str,
             default='')
+    argparser.add_argument('--vocabsize',
+            type=int,
+            default=0)
     argparser.add_argument('--model',
             type=str,
             default='')

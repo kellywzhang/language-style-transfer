@@ -24,14 +24,20 @@ class Vocabulary(object):
         for i in range(self.size):
             self.embedding[i] /= LA.norm(self.embedding[i])
 
-def build_vocab(data, path, min_occur=5):
+def build_vocab(data, path, min_occur=5, size=0):
     word2id = {'<pad>':0, '<go>':1, '<eos>':2, '<unk>':3}
     id2word = ['<pad>', '<go>', '<eos>', '<unk>']
 
     words = [word for sent in data for word in sent]
     cnt = Counter(words)
-    for word in cnt:
-        if cnt[word] >= min_occur:
+    if size == 0:
+        for word in cnt:
+            if cnt[word] >= min_occur:
+                word2id[word] = len(word2id)
+                id2word.append(word)
+    else:
+        pruned = cnt.most_frequent(size)
+        for word, _ in cnt.items():
             word2id[word] = len(word2id)
             id2word.append(word)
     vocab_size = len(word2id)

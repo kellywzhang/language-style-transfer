@@ -1,7 +1,7 @@
 import os
 import sys
 import time
-import ipdb
+#import ipdb
 import random
 import cPickle as pickle
 import numpy as np
@@ -63,8 +63,8 @@ class Model(object):
         dec_inputs = tf.nn.embedding_lookup(embedding, self.dec_inputs)
 
         #####   auto-encoder   #####
-        init_state = tf.concat(1, [linear(labels, dim_y, scope='encoder'),
-            tf.zeros([self.batch_size, dim_z])])
+        init_state = tf.concat([linear(labels, dim_y, scope='encoder'),
+            tf.zeros([self.batch_size, dim_z])], 1)
         cell_e = create_cell(dim_h, n_layers, self.dropout)
         _, z = tf.nn.dynamic_rnn(cell_e, enc_inputs,
             initial_state=init_state, scope='encoder')
@@ -74,17 +74,17 @@ class Model(object):
         #_, z = tf.nn.dynamic_rnn(cell_e, enc_inputs,
         #    dtype=tf.float32, scope='encoder')
 
-        self.h_ori = tf.concat(1, [linear(labels, dim_y,
-            scope='generator'), z])
-        self.h_tsf = tf.concat(1, [linear(1-labels, dim_y,
-            scope='generator', reuse=True), z])
+        self.h_ori = tf.concat([linear(labels, dim_y,
+            scope='generator'), z], 1)
+        self.h_tsf = tf.concat([linear(1-labels, dim_y,
+            scope='generator', reuse=True), z], 1)
 
         cell_g = create_cell(dim_h, n_layers, self.dropout)
         g_outputs, _ = tf.nn.dynamic_rnn(cell_g, dec_inputs,
             initial_state=self.h_ori, scope='generator')
 
         # attach h0 in the front
-        teach_h = tf.concat(1, [tf.expand_dims(self.h_ori, 1), g_outputs])
+        teach_h = tf.concat([tf.expand_dims(self.h_ori, 1), g_outputs], 1)
 
         g_outputs = tf.nn.dropout(g_outputs, self.dropout)
         g_outputs = tf.reshape(g_outputs, [-1, dim_h])
@@ -193,7 +193,7 @@ if __name__ == '__main__':
         print '#sents of training file 1:', len(train1)
 
         if not os.path.isfile(args.vocab):
-            build_vocab(train0 + train1, args.vocab)
+            build_vocab(train0 + train1, args.vocab, size=args.vocabsize)
 
     vocab = Vocabulary(args.vocab)
     print 'vocabulary size:', vocab.size
