@@ -36,7 +36,7 @@ def build_vocab(data, path, min_occur=5, size=0):
                 word2id[word] = len(word2id)
                 id2word.append(word)
     else:
-        pruned = cnt.most_frequent(size)
+        pruned = cnt.most_common(size)
         for word, _ in cnt.items():
             word2id[word] = len(word2id)
             id2word.append(word)
